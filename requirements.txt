@@ -1,0 +1,3 @@
+# Core dependencies for Remote ID Python Library
+pyserial>=3.5
+# Built-in modules used: binascii, struct, string, argparse, csv, pathlib, datetime, time, os

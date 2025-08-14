@@ -1,0 +1,101 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "remote-id-python"
+version = "1.0.0"
+authors = [
+    {name = "Jan Mikołajczyk", email = "jan.mikolajczyk@example.com"},
+]
+description = "Comprehensive Python library for Remote ID drone data decoding and monitoring"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research", 
+    "Topic :: Scientific/Engineering",
+    "Topic :: System :: Hardware",
+    "Topic :: Communications",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+keywords = ["drone", "remote-id", "astm-f3411", "ble", "wifi-nan", "aviation", "uav"]
+dependencies = [
+    "pyserial>=3.5",
+    "binascii2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.0.0",
+    "flake8>=4.0.0",
+]
+docs = [
+    "sphinx>=4.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+]
+
+[project.scripts]
+remote-id-decode = "remote_id.cli:decode_command"
+remote-id-monitor = "remote_id.cli:monitor_command"
+remote-id-live = "remote_id.cli:live_command"
+
+[project.urls]
+Homepage = "https://github.com/janmikolajczyk/remote-id-python"
+Documentation = "https://remote-id-python.readthedocs.io/"
+Repository = "https://github.com/janmikolajczyk/remote-id-python.git"
+"Bug Reports" = "https://github.com/janmikolajczyk/remote-id-python/issues"
+
+# Tool configuration
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+remote_id = ["data/*.json", "templates/*.txt"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = [
+    "tests",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/examples/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
