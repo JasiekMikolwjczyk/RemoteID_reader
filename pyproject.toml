@@ -31,7 +31,6 @@ classifiers = [
 keywords = ["drone", "remote-id", "astm-f3411", "ble", "wifi-nan", "aviation", "uav"]
 dependencies = [
     "pyserial>=3.5",
-    "binascii2",
 ]
 
 [project.optional-dependencies]
