@@ -2,6 +2,15 @@
 
 This directory contains the firmware for ESP32-S3 Remote ID Sniffer that automatically scans for Wi-Fi NAN and BLE Remote ID broadcasts.
 
+## Firmware Features v2.0
+
+- **Automatic Scanning**: Continuously scans Wi-Fi NAN and BLE for Remote ID broadcasts
+- **Status Pins Control**: MSG, WARN, READY pins all set to LOW state always  
+- **LED Status Indicator**:
+  - Slow blink (1Hz): System active and scanning
+  - Fast blink (5Hz): Remote ID frames detected (for 3 seconds after last frame)
+- **Raw Frame Output**: Transmits all detected frames in structured format for computer processing
+
 ## Hardware Requirements
 
 - **ESP32-S3 DevKit N8** (or compatible board)
@@ -63,6 +72,9 @@ esptool.py --baud 460800 write_flash \
    # Or use the Python library
    python3 -c "from remote_id import monitor_live; monitor_live('/dev/cu.usbmodem14101')"
    ```
+4. **Observe LED status**:
+   - Slow blink (1 second intervals): System is active and scanning
+   - Fast blink (200ms intervals): Remote ID frames are being detected
 
 ## Expected Output
 
@@ -70,7 +82,7 @@ The firmware will automatically start scanning and output structured data:
 
 ```
 =================================================
-🚁 ESP32-S3 Remote ID Sniffer v1.0
+🚁 ESP32-S3 Remote ID Sniffer v2.0
    Automatic Wi-Fi NAN & BLE Scanner  
 =================================================
 
@@ -135,7 +147,7 @@ If ESP32-S3 doesn't enter flashing mode:
 4. Release **BOOT** button
 5. Try flashing again
 
-## Firmware Features
+## Additional Firmware Features
 
 - ✅ **Automatic startup** - Begins scanning immediately on power-up
 - ✅ **Dual protocol** - Scans both Wi-Fi NAN and BLE simultaneously  
@@ -143,6 +155,8 @@ If ESP32-S3 doesn't enter flashing mode:
 - ✅ **Real-time streaming** - Continuous output via USB serial
 - ✅ **Low latency** - Optimized for fast frame detection and transmission
 - ✅ **ASTM F3411 compatible** - Supports standard Remote ID message formats
+- ✅ **Visual feedback** - LED indicates system status and detection activity
+- ✅ **Hardware integration** - Status pins for external monitoring systems
 
 ## Technical Details
 
@@ -156,7 +170,17 @@ If ESP32-S3 doesn't enter flashing mode:
 
 ## Building from Source
 
-If you want to modify the firmware, see the source code in the `esp32s3-remote-id-firmware/` directory and follow ESP-IDF build instructions.
+If you want to modify the firmware, see the source code in the `source/` directory and follow ESP-IDF build instructions.
+
+### GPIO Pin Configuration
+
+Based on ESP32_S3_MINI_V1 schematic:
+- **REMID_RDY_PIN**: GPIO 42 → mPCIe pin 42 (READY signal)
+- **REMID_WARN_PIN**: GPIO 44 → mPCIe pin 44 (WARNING signal) 
+- **REMID_MSG_PIN**: GPIO 46 → mPCIe pin 46 (MESSAGE signal)
+- **STATUS_LED_PIN**: GPIO 2 → Status LED
+
+All status pins are set to LOW state and remain LOW during operation.
 
 ## Support
 
