@@ -65,15 +65,15 @@ class LiveMonitor:
         """Połącz z portem szeregowym ESP32"""
         try:
             self.serial_conn = serial.Serial(self.port, self.baudrate, timeout=1)
-            print(f"🔌 Connected to {self.port} at {self.baudrate} baud")
+            print(f" Connected to {self.port} at {self.baudrate} baud")
             return True
         except Exception as e:
-            print(f"❌ Failed to connect to {self.port}: {e}")
+            print(f" Failed to connect to {self.port}: {e}")
             return False
     
     def display_frame_info(self, frame_data: Dict):
         """Wyświetl informacje o ramce w czasie rzeczywistym"""
-        print(f"\n🚁 Remote ID Frame #{self.frame_count + 1}")
+        print(f"\n Remote ID Frame #{self.frame_count + 1}")
         print(f"   Transport: {frame_data.get('transport', 'Unknown')}")
         print(f"   MAC: {frame_data.get('mac', 'Unknown')}")
         print(f"   RSSI: {frame_data.get('rssi', 'Unknown')} dBm")
@@ -122,12 +122,12 @@ class LiveMonitor:
         if save_to_file:
             filename = self.create_output_file(custom_filename)
             if display:
-                print(f"📁 Created output file: {filename}")
+                print(f" Created output file: {filename}")
         
         if display:
-            print(f"🎯 Live Monitor - Monitoring {self.port}")
-            print("📊 Press Ctrl+C to stop")
-            print("💡 Waiting for Remote ID devices...\n")
+            print(f" Live Monitor - Monitoring {self.port}")
+            print(" Press Ctrl+C to stop")
+            print(" Waiting for Remote ID devices...\n")
         
         frame_lines = []
         in_frame = False
@@ -151,34 +151,29 @@ class LiveMonitor:
                         self.output_file.write(f"[{timestamp}] {line}\n")
                         self.output_file.flush()
                     
-                    # Parsuj ramki Remote ID
+                    if display:
+                        print(f" {line}")
+
+                    # Parsuj ramki Remote ID (nie blokuje wyświetlania surowych linii)
                     if line == "RID_FRAME_START":
                         in_frame = True
                         frame_lines = []
-                        if display:
-                            print(f"🔍 Detecting Remote ID frame...", end="", flush=True)
                     elif line == "RID_FRAME_END" and in_frame:
                         in_frame = False
                         frame_data = self.parse_frame(frame_lines)
-                        
+
                         if display:
-                            print(" ✅")  # Complete the detection line
                             self.display_frame_info(frame_data)
                             print(f"   RAW: {frame_data.get('payload', 'No payload')}")
-                        
+
                         # Callback na ramkę
                         if self.on_frame_callback:
                             self.on_frame_callback(frame_data)
-                        
+
                         self.frame_count += 1
                         frame_lines = []
                     elif in_frame:
                         frame_lines.append(line)
-                    elif display and ("Remote ID detected" in line or "RID" in line):
-                        # Pokaż wiadomości ESP32 związane z Remote ID
-                        print(f"🚁 {line}")
-                    elif display and any(keyword in line.lower() for keyword in ['error', 'warning', 'failed']):
-                        print(f"⚠️  {line}")
                 
                 except UnicodeDecodeError:
                     continue
@@ -187,15 +182,15 @@ class LiveMonitor:
         
         except Exception as e:
             if display:
-                print(f"❌ Error: {e}")
+                print(f" Error: {e}")
             return False
         
         finally:
             self.running = False
             if display:
-                print(f"\n📊 Total frames captured: {self.frame_count}")
+                print(f"\n Total frames captured: {self.frame_count}")
                 if filename:
-                    print(f"📁 Data saved to: {filename}")
+                    print(f" Data saved to: {filename}")
             
             if self.output_file:
                 self.output_file.close()

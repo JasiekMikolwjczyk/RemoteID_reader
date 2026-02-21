@@ -97,9 +97,10 @@ def parse_header(b: bytes) -> Dict[str, Any]:
 def decode_basic_id(p: bytes) -> Dict[str, Any]:
     if len(p) != 24:
         raise ValueError("Basic ID payload must be 24 bytes")
-    id_type = _to_uint8(p[0:1])
-    ua_type = _to_uint8(p[1:2])
-    uas_id = _to_ascii(p[2:22])
+    v = p[0]
+    ua_type = _to_uint8(v & 0x0F)
+    id_type = _to_uint8((v >> 4) & 0x0F)
+    uas_id = _to_ascii(p[1:21])
     return {
         "msg": "BasicID",
         "id_type": id_type,
@@ -108,6 +109,8 @@ def decode_basic_id(p: bytes) -> Dict[str, Any]:
         "ua_type_name": UA_TYPES.get(ua_type, "Unknown"),
         "uas_id": uas_id,
     }
+
+# poprawione dekodowanie ua_type i id_type
 
 def _decode_speed(ev: int, mult_flag: int) -> float:
     if mult_flag == 0:
